@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3 Test</title>
+    <style>
+    div.bar {
+    display: inline-block;
+    width: 75px;
+    height: 75px;   /* We'll override this later */
+    background-color: teal;
+}
+    </style>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+    var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+                11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+    var scale = d3.scale//********
+    var w = 500;
+    var h = 100;
+    var barPadding = 1;
+    d3.select("body").append("svg");
+
+    var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)   // <-- Here
+            .attr("height", h); // <-- and here!
+    svg.selectAll("rect")
+       .data(dataset)
+       .enter()
+       .append("rect")
+       .attr("x", 0)
+       .attr("y", 0)
+       .attr("width", 20)
+       .attr("height",  w / dataset.length - barPadding)
+       .attr("x", function(d, i){
+         return i * (w / dataset.length);
+       })
+       .attr("width", w / dataset.length - barPadding)
+       .attr("fill", function(d){
+         return "rgb( " + (d*10) + ",0,0)";
+       });
+
+       svg.selectAll("text")
+          .data(dataset)
+          .enter()
+          .append("text")
+         .text(function(d){
+           return d;
+         })
+         .attr("x", function(d, i) {
+              return i * (w / dataset.length) + 5;
+         })
+         .attr("y", function(d) {
+              return 16;
+         })
+         .attr("font-family", "微软雅黑")
+         .attr("font-size", "11px")
+         .attr("fill", "white");
+		</script>
+	</body>
+</html>

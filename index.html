@@ -15,10 +15,12 @@
 	</head>
 	<body>
 		<script type="text/javascript">
-    var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-                11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-    var scale = d3.scale//********
-    var w = 500;
+    var dataset=[79,81,82,81,67,74,51,50,78,66,77,78,81,72,53,79,69,33,76,50,67,80,59,82,79,81,73,65,77,82,74,68,75,25,79,81,82,51,82,79,67,79,81,52,81,75,79,79,57,74];
+    var scale = d3.scale.linear()
+									.domain([0, 255])
+									.range([33,82]);
+		var rgb =  255/(82-33);
+    var w = 800;
     var h = 100;
     var barPadding = 1;
     d3.select("body").append("svg");
@@ -40,7 +42,8 @@
        })
        .attr("width", w / dataset.length - barPadding)
        .attr("fill", function(d){
-         return "rgb( " + (d*10) + ",0,0)";
+				//  var x = (d-33) * rgb;
+         return "rgb( " + 2*d + ",0,0)";
        });
 
        svg.selectAll("text")

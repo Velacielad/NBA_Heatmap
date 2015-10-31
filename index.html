@@ -3,14 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>D3 Test</title>
-    <style>
-    div.bar {
-    width: 75px;
-    height: 75px;   /* We'll override this later */
-    background-color: teal;
 
-}
-    </style>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 	</head>
 	<body>
@@ -24,11 +17,19 @@
     var h = 800;
     var barPadding = 1;
 
+		//top
+		var svg_top = d3.select("body")
+										.append("svg")
+										.attr("width", 800)
+										.attr("height",w / dataset.length - barPadding )
+
+
 
     var svg = d3.select("body")
             .append("svg")
             .attr("width", w)   // <-- Here
             .attr("height", h); // <-- and here!
+
     svg.selectAll("rect")
        .data(dataset)
        .enter()
@@ -44,7 +45,7 @@
        .attr("width", w / dataset.length - barPadding)
        .attr("fill", function(d){
 				//  var x = (d-33) * rgb;
-         return "rgb( " + 2*d + ",0,0)";
+         return "rgb( " + 2*d + ",196,165)";
        });
 
        svg.selectAll("text")

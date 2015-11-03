@@ -12,18 +12,8 @@
     var scale = d3.scale.linear()
 									.domain([0, 255])
 									.range([33,82]);
-		var rgb =  255/(82-33);
     var w = 800;
     var h = 800;
-    var barPadding = 1;
-
-		//top
-		var svg_top = d3.select("body")
-										.append("svg")
-										.attr("width", 800)
-										.attr("height",w / dataset.length - barPadding )
-
-
 
     var svg = d3.select("body")
             .append("svg")

@@ -1,59 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>D3 Test</title>
+<meta charset="utf-8">
+<style>
 
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-	</head>
-	<body>
-		<script type="text/javascript">
-    var dataset=[79,81,82,81,67,74,51,50,78,66,77,78,81,72,53,79,69,33,76,50,67,80,59,82,79,81,73,65,77,82,74,68,75,25,79,81,82,51,82,79,67,79,81,52,81,75,79,79,57,74];
-    var scale = d3.scale.linear()
-									.domain([0, 255])
-									.range([33,82]);
-    var w = 800;
-    var h = 800;
+    body {
+        font-size:10px;
+        font-family: "微软雅黑";
+    }
 
-    var svg = d3.select("body")
-            .append("svg")
-            .attr("width", w)   // <-- Here
-            .attr("height", h); // <-- and here!
+    .label {
+        font-weight: bold;
+    }
 
-    svg.selectAll("rect")
-       .data(dataset)
-       .enter()
-       .append("rect")
-       .attr("x", 16)
-       .attr("y", 0)
-       .attr("width", 20)
-       .attr("height",  w / dataset.length - barPadding)
+    .tile {
+        shape-rendering: crispEdges;
+    }
+    .domain{
+      display: none;
+    }
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+    }
 
-			 .attr("y", function(d, i){
-         return i * (w / dataset.length);
-       })
-       .attr("width", w / dataset.length - barPadding)
-       .attr("fill", function(d){
-				//  var x = (d-33) * rgb;
-         return "rgb( " + 2*d + ",196,165)";
-       });
+</style>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script>
 
-       svg.selectAll("text")
-          .data(dataset)
-          .enter()
-          .append("text")
-         .text(function(d){
-           return d;
-         })
-         .attr("y", function(d, i) {
-              return i * (w / dataset.length) + 12;
-         })
-         .attr("x", function(d) {
-              return 0;
-         })
-         .attr("font-family", "微软雅黑")
-         .attr("font-size", "11px")
-         .attr("fill", "#3F4040");
-		</script>
-	</body>
-</html>
+    var items = ['G','MIN','PTS','FGM','FGA','FGP','FTM','FTA','FTP','3PM','3PA','3PP','ORB','DRB','TRB','AST','STL','BLK','TO','PF'];
+    var margin = {top: 20, right: 90, bottom: 30, left: 120},
+            width = 750 - margin.left - margin.right,
+            height = 1400 - margin.top - margin.bottom;
+
+    var x = d3.scale.ordinal().domain(items).rangeRoundBands([-10, width], 0.1);
+    var y = d3.scale.ordinal() .rangeRoundBands([0, height], 0.1);
+    var z = new Array(20);
+    var colors = ["#FF1300","#FF006F","#FF00FA","#BF00FF","#8800FF","#2700FF","#0058FF","#009EFF","#00DAFF","#00FFDC",
+                  "#00FF9B","#01FF54","#72ff00","#86FF00","#D7FF00","#FFDC00","#FFC505","#FFAD0A","#FF9005","#FF5E00"];
+
+    for(var i = 0;i < items.length;i++){
+        z[i] = d3.scale.linear().range(["#EDEDED", colors[i]]);
+    }
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+    var xStep = x.rangeBand(),
+            yStep = 100;
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.csv("basketball.csv", function(error, players) {
+        if (error) throw error;
+        players.forEach(function(d) {
+            d.NAME = "" + d.NAME + "";
+            for(var p = 1; p < items.length;p++){
+                d[items[p]] = + d[items[p]];
+                console.log(d[items[p]]);
+            }
+
+        });
+        y.domain(players.map(function(d){
+            return d.NAME;
+        }));
+        for(var j = 0;j<items.length;j++ ){
+            z[j].domain(d3.extent(players, function(d) { return d[items[j]]; }))
+        }
+        var container = svg.selectAll(".tile")
+                .data(players);
+        for(var position = 0; position < items.length;position++){
+            container.enter().append("rect")
+                    .attr("class", "tile")
+                    .attr("x",x(items[position]))
+                    .attr("y",function(d) {return y(d.NAME);})
+                    .attr("width", x.rangeBand())
+                    .attr("height", y.rangeBand())
+                    .style("fill", function(d) {return z[position](d[items[position]]); });}
+
+        svg.append("g").attr("transform", "translate(0," + 1 + ")")
+                       .call(xAxis)
+                       .append("text")
+                       .attr("class", "label")
+                       .attr("x", width)
+                       .attr("y", 0)
+
+        svg.append("g").call(yAxis)
+                       .append("text")
+                       .attr("class", "label")
+    });
+
+</script>
